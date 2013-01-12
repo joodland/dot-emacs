@@ -48,6 +48,12 @@
 
 ;;(require 'confluence)                   ; confluence editor
 
+;; set full path to sml repl
+(if (file-exists-p "/usr/local/Cellar/smlnj/110.75/libexec/bin/sml")
+    (setq sml-program-name "/usr/local/Cellar/smlnj/110.75/libexec/bin/sml"))
+
+;; follow links to version controlled files
+(setq vc-follow-symlinks t)
 
 
 ;; enable File->Open Recent-> menu item
