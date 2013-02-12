@@ -34,23 +34,22 @@
 (require 'clojure-mode)                 ; clojure major-mode
 (require 'js2-mode)                     ; a better javascript major- mode
 (require 'mustache-mode)                ; mustache major-mode
-(require 'scala-mode-auto)              ; scala major-mode
+(require 'scala-mode2)                  ; scala major-mode
 (require 'restclient)                   ; REST client
-(require 'ess-site)                     ; R mode
-(require 'ess-inf)                      ; more R mode
 (require 'expand-region)                ; expand region on scope at the time
 
 ;; site-lisp
-(require 'ethan-wspace)                 ; whitespace mode
 (require 'thrift-mode)                  ; thrift major-mode
 (require 'bm)                           ; visual bookmarks
 (require 'uniq)                         ; unix uniq tool on emacs buffers
 
 ;;(require 'confluence)                   ; confluence editor
 
-;; set full path to sml repl
-(if (file-exists-p "/usr/local/Cellar/smlnj/110.75/libexec/bin/sml")
-    (setq sml-program-name "/usr/local/Cellar/smlnj/110.75/libexec/bin/sml"))
+;; whitespace mode
+(when (require 'ethan-wspace nil 'noerror)
+  ;; make whitespace stand out
+  (global-ethan-wspace-mode 1))
+
 
 ;; follow links to version controlled files
 (setq vc-follow-symlinks t)
@@ -59,8 +58,6 @@
 ;; enable File->Open Recent-> menu item
 (recentf-mode)
 
-;; make whitespace stand out
-(global-ethan-wspace-mode 1)
 
 ;; interpreter-mode-alist
 (add-to-list 'interpreter-mode-alist (cons "perl" 'cperl-mode))
@@ -365,9 +362,10 @@
  ;; '(confluence-default-space-alist (list (cons confluence-url "DEV")))
 
  ;; mac osx
- '(ns-alternate-modifier (quote super))
+ ;; '(ns-alternate-modifier (quote super))
  '(ns-command-modifier (quote meta))
  '(ns-function-modifier (quote control))
+ '(ns-option-modifier nil)
 
 
  ;;
