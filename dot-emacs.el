@@ -50,6 +50,9 @@
   ;; make whitespace stand out
   (global-ethan-wspace-mode 1))
 
+;; enable diff marks in fringe
+(if (boundp 'global-diff-hl-mode)
+    (global-diff-hl-mode))
 
 ;; follow links to version controlled files
 (setq vc-follow-symlinks t)
