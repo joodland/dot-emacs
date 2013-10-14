@@ -37,6 +37,8 @@
 (require 'scala-mode2)                  ; scala major-mode
 (require 'restclient)                   ; REST client
 (require 'expand-region)                ; expand region on scope at the time
+(require 'python-mode)                  ; python mode
+(require 'enh-ruby-mode)                ; ruby mode
 
 ;; site-lisp
 (require 'thrift-mode)                  ; thrift major-mode
@@ -57,10 +59,11 @@
 ;; follow links to version controlled files
 (setq vc-follow-symlinks t)
 
-
 ;; enable File->Open Recent-> menu item
 (recentf-mode)
 
+;; set ruby path
+(setq enh-ruby-program "/Users/fijoodla/.rvm/rubies/ruby-1.9.3-p327/bin/ruby")
 
 ;; interpreter-mode-alist
 (add-to-list 'interpreter-mode-alist (cons "perl" 'cperl-mode))
@@ -92,6 +95,7 @@
                  ("\\.thrift$" . thrift-mode)
                  ("\\.xml$" . nxml-mode)
                  ("\\.md$" . markdown-mode)
+                 ("\\.rb$" . enh-ruby-mode)
                  ("\\.css$" . css-mode))
                auto-mode-alist))
 
@@ -163,6 +167,9 @@
 
 ;; disable toolbar
 (tool-bar-mode -1)
+
+;; disable scrollbar
+(scroll-bar-mode -1)
 
 ;; Don't open files from the workspace in a new frame
 (setq ns-pop-up-frames nil)
@@ -265,6 +272,9 @@
   (setq deactivate-mark nil))
 
 
+;; Set `sql-set-product' to something other than 'ansi
+;; to avoid error when calling `sql-connect'.
+(sql-set-product 'postgres)
 
 ;; Sybase
 (setenv "SYBASE" "/Applications/Sybase/System")
@@ -274,9 +284,32 @@
 ;; MySQL
 (setq sql-mysql-program "/usr/local/bin/mysql")
 
-;; sql connection settings
+;; PostgreSQL
+(setq sql-postgres-program "/usr/local/bin/psql")
+
+;; sql connection settings (connect to a database with (sql-connect))
 (if (file-exists-p (expand-file-name "~/site-lisp/sql-connections.el"))
     (load-file (expand-file-name "~/site-lisp/sql-connections.el")))
+
+(defun sql-postgres-mode nil
+  "Enable `sql-mode' and set SQL dialect to PostgreSQL."
+  (interactive)
+
+  (sql-mode)
+  (sql-set-product 'postgres)
+  (sql-highlight-postgres-keywords)
+
+  (sql-set-sqli-buffer))
+
+(defun sql-sybase-mode nil
+  "Enable `sql-mode' and set SQL dialect to Sybase."
+  (interactive)
+
+  (sql-mode)
+  (sql-set-product 'sybase)
+  (sql-highlight-sybase-keywords)
+
+  (sql-set-sqli-buffer))
 
 
 
@@ -294,7 +327,7 @@
             (setq comment-column 40)
 
             ;; enable sybase syntaxs highlighting
-            (sql-highlight-sybase-keywords)
+            ;; (sql-highlight-sybase-keywords)
 
             (define-key sql-mode-map "\t" 'indent-relative-maybe)))
 
@@ -312,6 +345,10 @@
             (setq sql-alternate-buffer-name (concat sql-user "@" sql-server "(" sql-database ")"))
             (sql-rename-buffer)))
 
+
+
+;; make scripts executable on save
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
 
 ;;;
@@ -339,6 +376,9 @@
 ;; Font size
 (global-set-key (kbd "M-+") 'text-scale-increase)
 (global-set-key (kbd "M--") 'text-scale-decrease)
+(global-set-key (kbd "M-0") (lambda ()
+                              (interactive)
+                              (text-scale-set 0))
 
 ;; use hippie-expand instead of dabbrev
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -347,6 +387,9 @@
 (global-set-key (kbd "s-<up>") 'er/expand-region)
 (global-set-key (kbd "s-<down>") 'er/contract-region)
 
+
+(global-set-key (kbd "C-<") 'shift-region-left)
+(global-set-key (kbd "C->") 'shift-region-right)
 
 
 ;;;
