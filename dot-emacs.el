@@ -378,7 +378,7 @@
 (global-set-key (kbd "M--") 'text-scale-decrease)
 (global-set-key (kbd "M-0") (lambda ()
                               (interactive)
-                              (text-scale-set 0))
+                              (text-scale-set 0)))
 
 ;; use hippie-expand instead of dabbrev
 (global-set-key (kbd "M-/") 'hippie-expand)
