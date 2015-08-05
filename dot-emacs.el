@@ -1,6 +1,6 @@
 ;; -*- mode: Emacs-Lisp; truncate-lines: t; -*-
 
-;; Copyright (C) 1998 - 2012  Jo Odland
+;; Copyright (C) 1998 - 2015  Jo Odland
 ;; All rights reserved.
 ;;
 ;; Filename:    .emacs
@@ -11,8 +11,10 @@
 
 (require 'package)
 
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;:; http://stackoverflow.com/questions/14836958/updating-packages-in-emacs
+;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+(add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/"))
 
 (package-initialize)
 
@@ -26,10 +28,10 @@
 (require 'bs)                           ; a better show-buffer C-x C-b
 (require 'uniquify)                     ; Unique buffer names
 (require 'sql)
+;(require 'auto-complete)
 
 ;; package.el
 (require 'mic-paren)                    ; better paren matching
-(require 'magit)                        ; git mode
 (require 'markdown-mode)                ; markdown mode
 (require 'clojure-mode)                 ; clojure major-mode
 (require 'js2-mode)                     ; a better javascript major- mode
@@ -39,18 +41,33 @@
 (require 'expand-region)                ; expand region on scope at the time
 (require 'python-mode)                  ; python mode
 (require 'enh-ruby-mode)                ; ruby mode
+(require 'cider)                        ; clojure mode
+(require 'exec-path-from-shell)         ; fix PATH issues on Mac OSX
 
 ;; site-lisp
 (require 'thrift-mode)                  ; thrift major-mode
 (require 'bm)                           ; visual bookmarks
 (require 'uniq)                         ; unix uniq tool on emacs buffers
 
-;;(require 'confluence)                   ; confluence editor
+
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
+;; set default frame size
+(setq default-frame-alist
+      '((top . 1)
+        (left . 45)
+        (width . 90)
+        (height . 70)
+        ))
 
 ;; whitespace mode
 (when (require 'ethan-wspace nil 'noerror)
   ;; make whitespace stand out
   (global-ethan-wspace-mode 1))
+
+;; turn of final newline. Conflicts with ethan-wspace-mode
+(setq mode-require-final-newline nil)
 
 ;; enable diff marks in fringe
 (if (boundp 'global-diff-hl-mode)
@@ -60,7 +77,8 @@
 (setq vc-follow-symlinks t)
 
 ;; enable File->Open Recent-> menu item
-(recentf-mode)
+(recentf-mode t)
+(setq recentf-max-saved-items 50)
 
 ;; set ruby path
 (setq enh-ruby-program "/Users/fijoodla/.rvm/rubies/ruby-1.9.3-p327/bin/ruby")
@@ -80,6 +98,9 @@
 
 ;; enable paren matching
 (paren-activate)
+
+;; uniq buffer names
+(setq uniquify-buffer-name-style 'post-forward)
 
 ;; configure *scratch* buffer
 (setq inhibit-startup-message t         ; drop emacs-info
@@ -106,6 +127,7 @@
 (setq visible-bell nil)
 (setq ring-bell-function `ignore)
 
+(setq inhibit-startup-message t)
 
 ;; ensure utf-8
 (set-terminal-coding-system 'utf-8)
@@ -196,32 +218,45 @@
                                          try-complete-lisp-symbol))
 
 
+;; set `default-directory' to ~/
+(setq-default default-directory (expand-file-name "~/"))
+(setq default-directory (expand-file-name "~/"))
+
+
+(setq magit-last-seen-setup-instructions "1.4.0")
+
+
+
+;; python
+;(elpy-enable)
+;(setq py-pyflakes-command "/usr/local/bin/pyflakes")
+
+;;
+(ido-mode)
+(setq ido-create-new-buffer 'always)
+(setq ido-ignore-extensions t)
+
+
+
+;;
+;; Auto complete
+;;
+(global-auto-complete-mode t)
+
+(setq-default ac-expand-on-auto-complete nil)
+(setq-default ac-auto-start 2)
+(setq-default ac-dwim nil)
+
+; Use Emacs' built-in TAB completion hooks to trigger AC (Emacs >= 23.2)
+(setq tab-always-indent 'complete)  ;; use 't when auto-complete is disabled
+(add-to-list 'completion-styles 'initials t)
+
+
 ;;
 ;; Faces
 ;;
+(load-theme 'spolsky t) ;; https://github.com/owainlewis/emacs-color-themes
 
-;; Set proper face looks if colour window-system
-(if (and window-system (> (x-display-planes) 1))
-    (progn
-
-      ;; Set background and foreground color
-      (set-foreground-color "gainsboro")
-      (set-background-color "black")
-
-      ;; Set fringe face
-      (if (facep 'fringe)
-          (progn
-            (set-face-foreground 'fringe "green")
-            (set-face-background 'fringe "black")))
-
-
-      ;; Set proper modeline look
-      (if (facep 'modeline)
-          (progn
-            (set-face-foreground 'modeline "green")
-            (set-face-background 'modeline "black")))
-
-      ))
 
 
 
@@ -313,6 +348,13 @@
 
 
 
+(defun ido-recentf-open ()
+  "Use `ido-completing-readd' to \\[find-file] a recent file"
+  (interactive)
+  (if (find-file (ido-completing-read "Find recent file: " (mapcar 'abbreviate-file-name recentf-list)))
+      (message "Opening file...")
+    (message "No recent file list.")))
+
 
 ;;
 ;; HOOKS
@@ -344,6 +386,28 @@
             ;; rename output buffer
             (setq sql-alternate-buffer-name (concat sql-user "@" sql-server "(" sql-database ")"))
             (sql-rename-buffer)))
+
+;;
+(add-hook 'cider-mode-hook
+          (lambda ()
+            (cider-turn-on-eldoc-mode)
+
+            (setq cider-repl-pop-to-buffer-on-connect nil)
+            (setq cider-popup-stacktraces nil)
+            (setq cider-repl-popup-stacktraces t)
+            (setq cider-repl-popup-stacktraces t)
+            (setq nrepl-buffer-name-separator "-")
+            (setq nrepl-buffer-name-show-port t)
+            (setq cider-repl-display-in-current-window t)
+            (setq cider-repl-print-length 100) ; the default is nil, no limit
+            (setq cider-prompt-save-file-on-load nil)
+            (setq cider-repl-result-prefix ";; => ")
+            (setq cider-interactive-eval-result-prefix ";; => ")
+            (setq cider-repl-use-clojure-font-lock t)
+            (setq cider-switch-to-repl-command 'cider-switch-to-current-repl-buffer)
+
+          ))
+
 
 
 
@@ -391,6 +455,16 @@
 (global-set-key (kbd "C-<") 'shift-region-left)
 (global-set-key (kbd "C->") 'shift-region-right)
 
+;; find recent files, ido mode
+(global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+
+;; enable ido style on M-x (smex.el)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+
+;; bind magit
+(global-set-key (kbd "C-x g") 'magit-status)
+
 
 ;;;
 ;;; Custom
@@ -402,10 +476,6 @@
  ;; bs.el
  '(bs-must-always-show-regexp "\\(^\\*scratch\\*\\|^\\*SQL\\)")
  '(bs-default-sort-name "by name")
-
- ;; confluence customization
- ;; '(confluence-url "http://confluence.finn.no/rpc/xmlrpc")
- ;; '(confluence-default-space-alist (list (cons confluence-url "DEV")))
 
  ;; mac osx
  ;; '(ns-alternate-modifier (quote super))
