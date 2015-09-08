@@ -311,10 +311,6 @@
 ;; to avoid error when calling `sql-connect'.
 (sql-set-product 'postgres)
 
-;; Sybase
-(setenv "SYBASE" "/Applications/Sybase/System")
-(setq sql-sybase-program "/Applications/Sybase/System/OCS-15_0/bin/isql")
-(setq sql-sybase-options '("-e" "-n" "-w" "2048" "-I" "/Applications/Sybase/System/interfaces")) ; isql --help for description of options
 
 ;; MySQL
 (setq sql-mysql-program "/usr/local/bin/mysql")
@@ -336,16 +332,6 @@
 
   (sql-set-sqli-buffer))
 
-(defun sql-sybase-mode nil
-  "Enable `sql-mode' and set SQL dialect to Sybase."
-  (interactive)
-
-  (sql-mode)
-  (sql-set-product 'sybase)
-  (sql-highlight-sybase-keywords)
-
-  (sql-set-sqli-buffer))
-
 
 
 (defun ido-recentf-open ()
@@ -360,6 +346,18 @@
 ;; HOOKS
 ;;
 
+;; GO mode
+(add-hook 'go-mode-hook
+          (lambda ()
+            ;; Customize compile command to run go build
+            (set  (make-local-variable 'compile-command)
+                   "go generate && go build -v && go test -v && go vet")
+
+            (setq gofmt-command "goimports")
+            (setq tab-width 4)
+
+            (add-hook 'before-save-hook 'gofmt-before-save)))
+
 
 ;; SQL mode hook
 (add-hook 'sql-mode-hook
@@ -367,9 +365,6 @@
             ;; customize comments
             (setq comment-start-skip "-- *")
             (setq comment-column 40)
-
-            ;; enable sybase syntaxs highlighting
-            ;; (sql-highlight-sybase-keywords)
 
             (define-key sql-mode-map "\t" 'indent-relative-maybe)))
 
@@ -494,7 +489,7 @@
 (custom-set-faces
 
  ;; font: -apple-Monaco-Medium-normal-normal-*-11-*-*-*-m-0-iso10646-1
- '(default ((t (:height 110 :family "Monaco"))))
+ '(default ((t (:height 120 :family "Hack"))))
  ;; empty
  )
 
