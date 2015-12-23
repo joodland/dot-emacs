@@ -43,6 +43,7 @@
 (require 'enh-ruby-mode)                ; ruby mode
 (require 'cider)                        ; clojure mode
 (require 'exec-path-from-shell)         ; fix PATH issues on Mac OSX
+(require 'git-gutter-fringe)            ; git changes in the gutter
 
 ;; site-lisp
 (require 'thrift-mode)                  ; thrift major-mode
@@ -50,16 +51,32 @@
 (require 'uniq)                         ; unix uniq tool on emacs buffers
 
 
+;; mac osx, import environment
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
 ;; set default frame size
-(setq default-frame-alist
-      '((top . 1)
-        (left . 45)
-        (width . 90)
-        (height . 70)
-        ))
+;; (setq default-frame-alist
+;;       '((top . 1)
+;;         (left . 45)
+;;         (width . 90)
+;;         (height . 70)
+;;         ))
+
+;; make cursor visible after scrolling
+(beacon-mode 1)
+
+;; turn on git-gutter
+(global-git-gutter-mode t)
+(setq git-gutter-fr:side 'right-fringe)
+
+(when (window-system)
+  (set-face-foreground 'git-gutter:added "#0c0")
+  (set-face-foreground 'git-gutter:deleted "#c00")
+  (set-face-foreground 'git-gutter:modified "#c0c"))
+
+
+
 
 ;; whitespace mode
 (when (require 'ethan-wspace nil 'noerror)
@@ -128,8 +145,10 @@
 (setq ring-bell-function `ignore)
 
 (setq inhibit-startup-message t)
+(setq initial-scratch-message nil)
 
 ;; ensure utf-8
+(set-language-environment "UTF-8")
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
