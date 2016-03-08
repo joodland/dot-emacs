@@ -43,12 +43,13 @@
 (require 'enh-ruby-mode)                ; ruby mode
 (require 'cider)                        ; clojure mode
 (require 'exec-path-from-shell)         ; fix PATH issues on Mac OSX
-(require 'git-gutter-fringe)            ; git changes in the gutter
 
 ;; site-lisp
 (require 'thrift-mode)                  ; thrift major-mode
 (require 'bm)                           ; visual bookmarks
 (require 'uniq)                         ; unix uniq tool on emacs buffers
+
+
 
 
 ;; mac osx, import environment
@@ -108,6 +109,7 @@
 
 ;; set backup directory
 (add-to-list 'backup-directory-alist (cons "." (expand-file-name "~/.emacs.d/.backups")))
+(setq tramp-backup-directory-alist backup-directory-alist) ; keep tramp backup in the same place.
 
 ;; Move to trash when deleting stuff
 (setq delete-by-moving-to-trash t
@@ -244,16 +246,25 @@
 
 (setq magit-last-seen-setup-instructions "1.4.0")
 
-
+;; enable project mode, https://github.com/bbatsov/projectile
+(projectile-global-mode)
+(setq projectile-completion-system 'grizzl)
 
 ;; python
 ;(elpy-enable)
 ;(setq py-pyflakes-command "/usr/local/bin/pyflakes")
 
-;;
-(ido-mode)
+;; ido mode
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
 (setq ido-create-new-buffer 'always)
 (setq ido-ignore-extensions t)
+
+
+;; disable ido faces to see flx highlights.
+(setq ido-enable-flex-matching t)
+(setq ido-use-faces nil)
 
 
 
