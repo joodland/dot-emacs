@@ -136,6 +136,7 @@
                  ("\\.xml$" . nxml-mode)
                  ("\\.md$" . markdown-mode)
                  ("\\.rb$" . enh-ruby-mode)
+                 ("\\.erb$" . puppet-mode)
                  ("\\.css$" . css-mode))
                auto-mode-alist))
 
