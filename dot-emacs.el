@@ -1,6 +1,6 @@
 ;; -*- mode: Emacs-Lisp; truncate-lines: t; -*-
 
-;; Copyright (C) 1998 - 2015  Jo Odland
+;; Copyright (C) 1998 - 2016  Jo Odland
 ;; All rights reserved.
 ;;
 ;; Filename:    .emacs
@@ -28,7 +28,7 @@
 (require 'bs)                           ; a better show-buffer C-x C-b
 (require 'uniquify)                     ; Unique buffer names
 (require 'sql)
-;(require 'auto-complete)
+
 
 ;; package.el
 (require 'mic-paren)                    ; better paren matching
@@ -48,7 +48,6 @@
 (require 'thrift-mode)                  ; thrift major-mode
 (require 'bm)                           ; visual bookmarks
 (require 'uniq)                         ; unix uniq tool on emacs buffers
-
 
 
 
@@ -77,6 +76,10 @@
   (set-face-foreground 'git-gutter:modified "#c0c"))
 
 
+;; remove text properties on yank
+(add-to-list 'yank-excluded-properties 'face)
+(add-to-list 'yank-excluded-properties 'occur-match)
+(add-to-list 'yank-excluded-properties 'occur-target)
 
 
 ;; whitespace mode
@@ -99,7 +102,7 @@
 (setq recentf-max-saved-items 50)
 
 ;; set ruby path
-(setq enh-ruby-program "/Users/fijoodla/.rvm/rubies/ruby-1.9.3-p327/bin/ruby")
+;; (setq enh-ruby-program "/Users/fijoodla/.rvm/rubies/ruby-1.9.3-p327/bin/ruby")
 
 ;; interpreter-mode-alist
 (add-to-list 'interpreter-mode-alist (cons "perl" 'cperl-mode))
@@ -110,6 +113,8 @@
 ;; set backup directory
 (add-to-list 'backup-directory-alist (cons "." (expand-file-name "~/.emacs.d/.backups")))
 (setq tramp-backup-directory-alist backup-directory-alist) ; keep tramp backup in the same place.
+
+(setq tramp-default-method "ssh")
 
 ;; Move to trash when deleting stuff
 (setq delete-by-moving-to-trash t
@@ -227,17 +232,17 @@
 ;; disable blinking cursor
 (blink-cursor-mode -1)
 
-;; hippie expand is dabbrev expand on steroids
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
+;; ;; hippie expand is dabbrev expand on steroids
+;; (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+;;                                          try-expand-dabbrev-all-buffers
+;;                                          try-expand-dabbrev-from-kill
+;;                                          try-complete-file-name-partially
+;;                                          try-complete-file-name
+;;                                          try-expand-all-abbrevs
+;;                                          try-expand-list
+;;                                          try-expand-line
+;;                                          try-complete-lisp-symbol-partially
+;;                                          try-complete-lisp-symbol))
 
 
 ;; set `default-directory' to ~/
@@ -250,6 +255,14 @@
 ;; enable project mode, https://github.com/bbatsov/projectile
 (projectile-global-mode)
 (setq projectile-completion-system 'grizzl)
+;; clean up the projectile mode-line
+(setq projectile-mode-line '(:eval
+                             (if (file-remote-p default-directory)
+                                 nil
+                               (format " P[%s]" (projectile-project-name)))))
+
+;; remove "GitGutter" from the mode-line
+(setq git-gutter:lighter nil)
 
 ;; python
 ;(elpy-enable)
@@ -456,6 +469,10 @@
 ;; other-window
 (define-key global-map (kbd "<C-tab>") 'other-window)
 
+;; git-gutter
+(define-key global-map [f7] 'git-gutter:next-hunk)
+(define-key global-map [S-f7] 'git-gutter:previous-hunk)
+
 ;; bookmark (bm.el)
 (define-key global-map [f2] 'bm-next)
 (define-key global-map [S-f2] 'bm-previous)
@@ -491,12 +508,15 @@
 ;; bind magit
 (global-set-key (kbd "C-x g") 'magit-status)
 
+;; visual regexp
+(define-key global-map (kbd "C-c r") 'vr/replace)
+(define-key global-map (kbd "C-c q") 'vr/query-replace)
 
 ;;;
 ;;; Custom
 ;;;
 
-;; set-variables
+;; Set-variables
 (custom-set-variables
 
  ;; bs.el
