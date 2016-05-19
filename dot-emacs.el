@@ -14,7 +14,8 @@
 ;:; http://stackoverflow.com/questions/14836958/updating-packages-in-emacs
 ;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-(add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/"))
+;; (add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/"))
+
 
 (package-initialize)
 
@@ -43,6 +44,8 @@
 (require 'enh-ruby-mode)                ; ruby mode
 (require 'cider)                        ; clojure mode
 (require 'exec-path-from-shell)         ; fix PATH issues on Mac OSX
+(require 'leerzeichen)                  ; show whitespace minor-mode
+(require 'helm-config)                  ; load helm config
 
 ;; site-lisp
 (require 'thrift-mode)                  ; thrift major-mode
@@ -98,8 +101,12 @@
 (setq vc-follow-symlinks t)
 
 ;; enable File->Open Recent-> menu item
-(recentf-mode t)
 (setq recentf-max-saved-items 50)
+(setq recentf-exclude (list "/\\.git/.*" ; Git contents
+                            "/elpa/.*"   ; Package files
+                            ))
+(recentf-mode t)
+
 
 ;; set ruby path
 ;; (setq enh-ruby-program "/Users/fijoodla/.rvm/rubies/ruby-1.9.3-p327/bin/ruby")
@@ -254,7 +261,8 @@
 
 ;; enable project mode, https://github.com/bbatsov/projectile
 (projectile-global-mode)
-(setq projectile-completion-system 'grizzl)
+(setq helm-split-window-in-side-p t)
+
 ;; clean up the projectile mode-line
 (setq projectile-mode-line '(:eval
                              (if (file-remote-p default-directory)
@@ -264,9 +272,6 @@
 ;; remove "GitGutter" from the mode-line
 (setq git-gutter:lighter nil)
 
-;; python
-;(elpy-enable)
-;(setq py-pyflakes-command "/usr/local/bin/pyflakes")
 
 ;; ido mode
 (ido-mode 1)
@@ -426,7 +431,7 @@
             (setq sql-alternate-buffer-name (concat sql-user "@" sql-server "(" sql-database ")"))
             (sql-rename-buffer)))
 
-;;
+;; clojure mode hook
 (add-hook 'cider-mode-hook
           (lambda ()
             (cider-turn-on-eldoc-mode)
@@ -447,7 +452,17 @@
 
           ))
 
+;; python
+(elpy-enable)
+(setq py-pyflakes-command "/usr/local/bin/pyflakes")
+(setq flymake-python-pyflakes-executable "flake8")
 
+;; python mode hook
+(add-hook 'python-mode-hook
+          (lambda ()
+
+            (leerzeichen-enable)        ; show whitespace
+            ))
 
 
 ;; make scripts executable on save
@@ -511,6 +526,11 @@
 ;; visual regexp
 (define-key global-map (kbd "C-c r") 'vr/replace)
 (define-key global-map (kbd "C-c q") 'vr/query-replace)
+
+;; make whitespace visible with leerzeichen
+(set-face-foreground 'leerzeichen "#454545")
+
+
 
 ;;;
 ;;; Custom
