@@ -4,7 +4,7 @@
 ;; All rights reserved.
 ;;
 ;; Filename:    .emacs
-;; Description: GNUEmacs 24.x
+;; Description: GNUEmacs 25.x
 ;; Author:      Jo Odland <jo.odland@gmail.com>
 ;;
 ;;
@@ -12,9 +12,7 @@
 (require 'package)
 
 ;:; http://stackoverflow.com/questions/14836958/updating-packages-in-emacs
-;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-;; (add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 
 (package-initialize)
@@ -67,7 +65,17 @@
 ;;         ))
 
 ;; make cursor visible after scrolling
-(beacon-mode 1)
+;; (beacon-mode 1)
+
+
+;; neotree
+(setq neo-smart-open t)
+
+;; a better mode-line
+(setq sml/no-confirm-load-theme t)
+(sml/setup)
+;; (smart-mode-line-enable)
+
 
 ;; turn on git-gutter
 (global-git-gutter-mode t)
@@ -84,11 +92,8 @@
 (add-to-list 'yank-excluded-properties 'occur-match)
 (add-to-list 'yank-excluded-properties 'occur-target)
 
-
-;; whitespace mode
-(when (require 'ethan-wspace nil 'noerror)
-  ;; make whitespace stand out
-  (global-ethan-wspace-mode 1))
+;; ;; whitespace mode
+(global-ethan-wspace-mode 1)
 
 ;; turn of final newline. Conflicts with ethan-wspace-mode
 (setq mode-require-final-newline nil)
@@ -239,18 +244,6 @@
 ;; disable blinking cursor
 (blink-cursor-mode -1)
 
-;; ;; hippie expand is dabbrev expand on steroids
-;; (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-;;                                          try-expand-dabbrev-all-buffers
-;;                                          try-expand-dabbrev-from-kill
-;;                                          try-complete-file-name-partially
-;;                                          try-complete-file-name
-;;                                          try-expand-all-abbrevs
-;;                                          try-expand-list
-;;                                          try-expand-line
-;;                                          try-complete-lisp-symbol-partially
-;;                                          try-complete-lisp-symbol))
-
 
 ;; set `default-directory' to ~/
 (setq-default default-directory (expand-file-name "~/"))
@@ -312,8 +305,6 @@
 ;;;
 ;;; Functions
 ;;;
-
-
 (defun url-decode-region (start end)
   "URL decode a region."
   (interactive "r")
@@ -495,6 +486,9 @@
 (define-key global-map (kbd "<left-fringe> <mouse-1>") 'bm-toggle-mouse)
 (define-key global-map (kbd "<right-fringe> <mouse-1>") 'bm-toggle-mouse)
 
+;; neotree
+(define-key global-map [f8] 'neotree-toggle)
+
 ;; Font size
 (global-set-key (kbd "M-+") 'text-scale-increase)
 (global-set-key (kbd "M--") 'text-scale-decrease)
@@ -530,6 +524,13 @@
 ;; make whitespace visible with leerzeichen
 (set-face-foreground 'leerzeichen "#454545")
 
+;; ace-window
+(global-set-key (kbd "M-p") 'ace-window)
+
+
+;; disable paradox github integration
+(setq paradox-github-token t)
+
 
 
 ;;;
@@ -554,13 +555,13 @@
  ;; cperl
  '(cperl-hairy t)
  '(cperl-highlight-variables-indiscriminately t)
-)
+ )
 
 ;; set-faces
 (custom-set-faces
 
- ;; font: -apple-Monaco-Medium-normal-normal-*-11-*-*-*-m-0-iso10646-1
- '(default ((t (:height 120 :family "Hack"))))
+ ;; ;; font: -apple-Monaco-Medium-normal-normal-*-11-*-*-*-m-0-iso10646-1
+ ;; '(default ((t (:height 120 :family "Hack"))))
  ;; empty
  )
 
