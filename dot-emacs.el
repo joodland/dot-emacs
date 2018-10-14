@@ -79,7 +79,7 @@
 
 ;; turn on git-gutter
 (global-git-gutter-mode t)
-(setq git-gutter-fr:side 'right-fringe)
+
 
 (when (window-system)
   (set-face-foreground 'git-gutter:added "#0c0")
