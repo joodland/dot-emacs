@@ -1,10 +1,10 @@
 ;; -*- mode: Emacs-Lisp; truncate-lines: t; -*-
 
-;; Copyright (C) 1998 - 2016  Jo Odland
+;; Copyright (C) 1998 - 2019  Jo Odland
 ;; All rights reserved.
 ;;
 ;; Filename:    .emacs
-;; Description: GNUEmacs 25.x
+;; Description: GNUEmacs 26.x
 ;; Author:      Jo Odland <jo.odland@gmail.com>
 ;;
 ;;
@@ -19,8 +19,12 @@
 
 
 ;; add user local site-lisp to load-path
-(if (file-exists-p (expand-file-name "~/site-lisp"))
-    (add-to-list 'load-path (expand-file-name "~/site-lisp")))
+(let ((site-lisp (expand-file-name "~/site-lisp"))
+      (bm-src (expand-file-name "~/github/bm")))
+
+  (when (file-exists-p site-lisp) (add-to-list 'load-path site-lisp))
+  (when (file-exists-p bm-src) (add-to-list 'load-path bm-src)))
+
 
 ;; built-ins
 (require 'css-mode)
@@ -145,17 +149,18 @@
 
 ;;; Mode triggers
 (setq auto-mode-alist
-       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
-                 ("\\.js$" . js2-mode)
-                 ("\\.json$" . js2-mode)
-                 ("\\.sql$" . sql-mode)
-                 ("\\.thrift$" . thrift-mode)
-                 ("\\.xml$" . nxml-mode)
-                 ("\\.md$" . markdown-mode)
-                 ("\\.rb$" . enh-ruby-mode)
-                 ("\\.erb$" . puppet-mode)
-                 ("\\.css$" . css-mode))
-               auto-mode-alist))
+      (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
+                ("^dot-\\.sh$" . shell-script-mode)
+                ("\\.js$" . js2-mode)
+                ("\\.json$" . js2-mode)
+                ("\\.sql$" . sql-mode)
+                ("\\.thrift$" . thrift-mode)
+                ("\\.xml$" . nxml-mode)
+                ("\\.md$" . markdown-mode)
+                ("\\.rb$" . enh-ruby-mode)
+                ("\\.erb$" . puppet-mode)
+                ("\\.css$" . css-mode))
+              auto-mode-alist))
 
 ;; set unified diff mode
 (setq diff-switches "-u")
