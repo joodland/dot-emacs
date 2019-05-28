@@ -48,6 +48,9 @@
 (require 'exec-path-from-shell)         ; fix PATH issues on Mac OSX
 (require 'leerzeichen)                  ; show whitespace minor-mode
 (require 'helm-config)                  ; load helm config
+(require 'doom-modeline)                ; doom mode line
+(require 'doom-themes)                  ; doom mode color theme
+
 
 ;; site-lisp
 (require 'thrift-mode)                  ; thrift major-mode
@@ -69,16 +72,11 @@
 ;;         ))
 
 ;; make cursor visible after scrolling
-;; (beacon-mode 1)
+(beacon-mode 1)
 
 
-;; neotree
+;; neotree, https://github.com/jaypei/emacs-neotree
 (setq neo-smart-open t)
-
-;; a better mode-line
-(setq sml/no-confirm-load-theme t)
-(sml/setup)
-;; (smart-mode-line-enable)
 
 
 ;; turn on git-gutter
@@ -299,12 +297,6 @@
 (add-to-list 'completion-styles 'initials t)
 
 
-;;
-;; Faces
-;;
-(load-theme 'spolsky t) ;; https://github.com/owainlewis/emacs-color-themes
-
-
 
 
 ;;;
@@ -488,6 +480,7 @@
 (define-key global-map [f2] 'bm-next)
 (define-key global-map [S-f2] 'bm-previous)
 (define-key global-map [C-f2] 'bm-toggle)
+(define-key global-map (kbd "C-c b") 'bm-toggle)
 (define-key global-map (kbd "<left-fringe> <mouse-1>") 'bm-toggle-mouse)
 (define-key global-map (kbd "<right-fringe> <mouse-1>") 'bm-toggle-mouse)
 
@@ -533,9 +526,70 @@
 (global-set-key (kbd "M-p") 'ace-window)
 
 
-;; disable paradox github integration
-(setq paradox-github-token t)
 
+;; doom-modeline
+;;
+;; Determines the style used by `doom-modeline-buffer-file-name'.
+(setq doom-modeline-buffer-file-name-style 'buffer-name)
+
+;; Whether display minor modes in mode-line or not.
+(setq doom-modeline-minor-modes nil)
+
+;; If non-nil, a word count will be added to the selection-info modeline segment.
+(setq doom-modeline-enable-word-count t)
+
+;; Whether display buffer encoding.
+(setq doom-modeline-buffer-encoding t)
+
+;; Whether display indentation information.
+(setq doom-modeline-indent-info t)
+
+;; If non-nil, only display one number for checker information if applicable.
+(setq doom-modeline-checker-simple-format t)
+
+;; The maximum displayed length of the branch name of version control.
+(setq doom-modeline-vcs-max-length 12)
+
+;; Whether display perspective name or not. Non-nil to display in mode-line.
+(setq doom-modeline-persp-name t)
+
+;; Whether display environment version or not
+(setq doom-modeline-env-version t)
+
+;; Whether display icons in mode-line or not.
+(setq doom-modeline-icon t)
+
+;; Whether display the icon for major mode. It respects `doom-modeline-icon'.
+(setq doom-modeline-major-mode-icon t)
+
+;; Whether display color icons for `major-mode'. It respects
+;; `doom-modeline-icon' and `all-the-icons-color-icons'.
+(setq doom-modeline-major-mode-color-icon t)
+
+;; Whether display icons for buffer states. It respects `doom-modeline-icon'.
+(setq doom-modeline-buffer-state-icon nil)
+
+;
+(doom-modeline-mode 1)
+
+;; Global settings (defaults)
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+;; may have their own settings.
+(load-theme 'doom-one t)
+
+;; Enable flashing mode-line on errors
+(doom-themes-visual-bell-config)
+
+;; Enable custom neotree theme (all-the-icons must be installed!)
+(doom-themes-neotree-config)
+;; or for treemacs users
+(doom-themes-treemacs-config)
+
+;; Corrects (and improves) org-mode's native fontification.
+(doom-themes-org-config)
 
 
 ;;;
